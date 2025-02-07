@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Gallery</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'gallery:artist-dashboard' %}">Artist Dashboard</a></li>
+                <li><a href="{% url 'gallery:user-dashboard' %}">User Dashboard</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="gallery">
+        <h2>Our Featured Artworks</h2>
+        <div class="gallery-container">
+            <div class="gallery-item">
+                <img src="{% static 'images/artwork1.jpg' %}" alt="Artwork 1">
+                <p>Artwork Title 1</p>
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'images/artwork2.jpg' %}" alt="Artwork 2">
+                <p>Artwork Title 2</p>
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'images/artwork3.jpg' %}" alt="Artwork 3">
+                <p>Artwork Title 3</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 ArtiSpace. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
