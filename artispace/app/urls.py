@@ -9,5 +9,5 @@ urlpatterns = [
     path('login/', views.login_view, name='app_login'),  # Changed name to avoid conflicts
     path('artists/', views.artist_list, name='artist_list'),
     path('artworks/', views.artwork_list, name='artwork_list'),
-    path('dashboard/customer/', views.customer_dashboard, name='customer_dashboard'),
+    path('artist/signup/', views.artist_signup, name='artist_signup'),  # Add this line
 ]

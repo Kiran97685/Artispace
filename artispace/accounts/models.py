@@ -1,7 +1,8 @@
 from django.db import models
-from django.conf import settings  # Use settings.AUTH_USER_MODEL directly
+from django.conf import settings  # Use settings.AUTH_USER_MODEL for flexibility
 from django.contrib.auth.models import AbstractUser
 
+# -------------------- Custom User Model --------------------
 class CustomUser(AbstractUser):
     ROLE_CHOICES = [
         ('artist', 'Artist'),
@@ -20,21 +21,19 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f"{self.username} - {self.role}"
 
-# Artist Model (Referencing settings.AUTH_USER_MODEL directly)
 class Artist(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='accounts_artist')
-    bio = models.TextField(blank=True, null=True)  # Add this field
-    website_url = models.URLField(blank=True, null=True)  # Add this field
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='artist_profile')
+    bio = models.TextField(blank=True, null=True)
+    website_url = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return self.user.username
-    
-# Artwork Model
+# -------------------- Artwork Model --------------------
 class Artwork(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     artist = models.ForeignKey(
-        'Artist',  # Use string reference to avoid circular import
+        Artist,  # Direct reference instead of string
         on_delete=models.CASCADE,
         related_name='artworks'
     )

@@ -44,13 +44,13 @@
 
         .right-side {
             width: 50%;
-            height: 100%; /* Ensure it takes full height */
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
             padding: 40px;
             align-items: center;
-            overflow-y: auto; /* In case of overflowing content */
+            overflow-y: auto;
         }
 
         .right-side h2 {
@@ -135,8 +135,62 @@
             }
 
             .right-side {
-                justify-content: flex-start; /* Align forms to the top */
+                justify-content: flex-start;
             }
+        }
+
+        /* Login Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal-content input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .modal-content button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .modal-content button:hover {
+            background-color: #45a049;
         }
 
     </style>
@@ -146,18 +200,18 @@
     <!-- Navbar -->
     <div class="navbar">
         <a href="#">ArtiSpace</a>
-        <a href="#" id="login-btn">Login</a>
+        <a href="customer_login.html" id="login-btn">Login</a>
     </div>
 
-    <!-- Main Content Container -->
-    <div class="container">
+     <!-- Main Content Container -->
+     <div class="container">
         <!-- Left Side for Image -->
         <div class="left-side">
             <!-- Add your image here -->
         </div>
 
-        <!-- Right Side for Form -->
-        <div class="right-side">
+         <!-- Right Side for Form -->
+         <div class="right-side">
             <!-- Sign Up Form (Customer) -->
             <div id="signup-form">
                 <h2>Sign Up as Customer</h2>
@@ -168,24 +222,12 @@
                     <input type="password" name="password" placeholder="Password" required><br>
                     <button type="submit">Sign Up</button>
                 </form>
-                <p><a href="#" id="switch-to-artist-signup" class="switch-link">Sign Up as Artist</a></p>
+                <p><a href="{% url 'accounts:artist_signup' %}" class="switch-link">Sign Up as Artist</a></p>
                 <p><a href="#" id="switch-to-login" class="switch-link">Already have an account? Login</a></p>
             </div>
+        </div>
 
-            <!-- Login Form (Customer) -->
-            <div id="login-form" style="display: none;">
-                <h2>Login as Customer</h2>
-                <form action="{% url 'accounts:customer_login' %}" method="post">
-                    {% csrf_token %}
-                    <input type="text" name="username" placeholder="Username" required><br>
-                    <input type="password" name="password" placeholder="Password" required><br>
-                    <button type="submit">Login</button>
-                </form>
-                <p><a href="#" id="switch-to-artist-login" class="switch-link">Login as Artist</a></p>
-                <p><a href="#" id="switch-to-signup-from-login" class="switch-link">Don't have an account? Sign Up</a></p>
-            </div>
-
-            <!-- Sign Up Form (Artist) -->
+        <!-- Sign Up Form (Artist) -->
             <div id="artist-signup-form" style="display: none;">
                 <h2>Sign Up as Artist</h2>
                 <form action="{% url 'accounts:artist_signup' %}" method="post">
@@ -195,65 +237,66 @@
                     <input type="password" name="password" placeholder="Password" required><br>
                     <button type="submit">Sign Up</button>
                 </form>
-                <p><a href="#" id="switch-to-customer-signup" class="switch-link">Sign Up as Customer</a></p>
+                <p><a href="{% url 'app:artist_signup' %}">Sign Up as Artist</a></p>
             </div>
 
-            <!-- Login Form (Artist) -->
-            <div id="artist-login-form" style="display: none;">
-                <h2>Login as Artist</h2>
-                <form action="{% url 'accounts:artist_login' %}" method="post">
-                    {% csrf_token %}
-                    <input type="text" name="username" placeholder="Username" required><br>
-                    <input type="password" name="password" placeholder="Password" required><br>
-                    <button type="submit">Login</button>
-                </form>
-                <p><a href="#" id="switch-to-customer-login" class="switch-link">Login as Customer</a></p>
-            </div>
+        <!-- Login Form (Artist) -->
+        <div id="artist-login-form" style="display: none;">
+            <h2>Login as Artist</h2>
+            <form action="{% url 'accounts:artist_login' %}" method="post">
+                {% csrf_token %}
+                <input type="text" name="username" placeholder="Username" required><br>
+                <input type="password" name="password" placeholder="Password" required><br>
+                <button type="submit">Login</button>
+            </form>
+            <p><a href="customer_login.html" id="switch-to-customer-login" class="switch-link">Login as Customer</a></p>
+        </div>   
+
+    <!-- Login Modal (Popup) -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login</h2>
+            <form action="{% url 'accounts:customer_login' %}" method="post">
+                {% csrf_token %}
+                <input type="text" name="username" placeholder="Username" required><br>
+                <input type="password" name="password" placeholder="Password" required><br>
+                <button type="submit">Login</button>
+            </form>
+            <p><a href="{% url 'accounts:artist_login' %}" class="switch-link">Login as Artist</a></p>
         </div>
     </div>
 
+    <!-- JavaScript -->
     <script>
-        // DOM Elements
-        const loginBtn = document.getElementById('login-btn');
-        const signupForm = document.getElementById('signup-form');
-        const loginForm = document.getElementById('login-form');
-        const artistSignupForm = document.getElementById('artist-signup-form');
-        const artistLoginForm = document.getElementById('artist-login-form');
+        document.addEventListener("DOMContentLoaded", function () {
+            // Select elements
+            const loginBtn = document.getElementById("login-btn");
+            const loginModal = document.getElementById("loginModal");
+            const closeBtn = document.querySelector(".close");
 
-        // Switch to Login form
-        loginBtn.addEventListener('click', function() {
-            signupForm.style.display = 'none';  // Hide the signup form
-            loginForm.style.display = 'block';  // Show the login form
-        });
+            // Check if elements exist before adding event listeners
+            if (loginBtn && loginModal && closeBtn) {
+                // Show Login Popup when Login button is clicked
+                loginBtn.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    loginModal.style.display = "flex";
+                });
 
-        // Switch to Signup form from Login
-        document.getElementById('switch-to-signup-from-login').addEventListener('click', function() {
-            loginForm.style.display = 'none';  // Hide the login form
-            signupForm.style.display = 'block';  // Show the signup form
-        });
+                // Close the modal when clicking the close button
+                closeBtn.addEventListener("click", function () {
+                    loginModal.style.display = "none";
+                });
 
-        // Switch to Artist Login form from Customer Login
-        document.getElementById('switch-to-artist-login').addEventListener('click', function() {
-            loginForm.style.display = 'none';  // Hide the customer login form
-            artistLoginForm.style.display = 'block';  // Show the artist login form
-        });
-
-        // Switch to Artist Signup form from Customer Signup
-        document.getElementById('switch-to-artist-signup').addEventListener('click', function() {
-            signupForm.style.display = 'none';  // Hide the customer signup form
-            artistSignupForm.style.display = 'block';  // Show the artist signup form
-        });
-
-        // Switch to Customer Signup form from Artist Signup
-        document.getElementById('switch-to-customer-signup').addEventListener('click', function() {
-            artistSignupForm.style.display = 'none';  // Hide the artist signup form
-            signupForm.style.display = 'block';  // Show the customer signup form
-        });
-
-        // Switch to Customer Login form from Artist Login
-        document.getElementById('switch-to-customer-login').addEventListener('click', function() {
-            artistLoginForm.style.display = 'none';  // Hide the artist login form
-            loginForm.style.display = 'block';  // Show the customer login form
+                // Close the modal when clicking outside the modal content
+                window.addEventListener("click", function (event) {
+                    if (event.target === loginModal) {
+                        loginModal.style.display = "none";
+                    }
+                });
+            } else {
+                console.error("One or more required elements not found in the DOM.");
+            }
         });
     </script>
 

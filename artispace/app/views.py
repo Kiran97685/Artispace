@@ -7,7 +7,7 @@ from django.views.generic import CreateView
 from .models import CustomUser
 
 def home(request):
-    return render(request, 'home.html')
+    return render(request, 'app/home.html')
 
 def customer_dashboard(request):
     return render(request, 'customer_dashboard.html')
@@ -31,7 +31,7 @@ from django.contrib.auth import login, authenticate
 from .forms import UserSignupForm, ArtistSignupForm
 from django.contrib.auth.decorators import login_required
 
-def user_signup(request):
+def customer_signup(request):
     if request.method == 'POST':
         form = UserSignupForm(request.POST)
         if form.is_valid():
@@ -40,7 +40,7 @@ def user_signup(request):
             return redirect('customer_dashboard')  # Redirect to user dashboard
     else:
         form = UserSignupForm()
-    return render(request, 'accounts/user_signup.html', {'form': form})
+    return render(request, 'accounts/customer_signup.html', {'form': form})
 
 def artist_signup(request):
     if request.method == 'POST':
