@@ -9,10 +9,10 @@ from django.contrib.auth.models import User
 # Fetch the custom user model
 CustomUser = get_user_model()
 
-class ArtistSignUpForm(UserCreationForm):
+class ArtistSignUpForm(forms.ModelForm):
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ['username', 'email', 'password']
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -23,25 +23,22 @@ class ArtistSignUpForm(UserCreationForm):
     
 class CustomerSignUpForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
-    password_confirm = forms.CharField(widget=forms.PasswordInput)
-
     class Meta:
         model = CustomUser
         fields = ['username', 'email', 'password']
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.role = 'artist'  # Explicitly set the role to artist
+        if commit:
+            user.save()
+        return user
 
-    def clean(self):
-        cleaned_data = super().clean()
-        password = cleaned_data.get('password')
-        password_confirm = cleaned_data.get('password_confirm')
-
-        if password != password_confirm:
-            raise forms.ValidationError("Passwords do not match.")
-        return cleaned_data
 
 class ArtistForm(forms.ModelForm):
     class Meta:
         model = Artist
-        fields = ['bio', 'website_url']
+        fields = []
 
 
 class LoginForm(forms.Form):
@@ -63,7 +60,7 @@ class CustomUserCreationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['role'].initial = 'artist'  # Default role is artist, but you can adjust this
+        self.fields['role'].initial = 'artist'
 
 
 class RegistrationForm(forms.ModelForm):

@@ -1,7 +1,7 @@
 from django.db import models
 from accounts.models import CustomUser
 from django.conf import settings
-
+from django.contrib.auth.models import AbstractUser
 
 # Artist Model
 
@@ -13,16 +13,9 @@ class Artist(models.Model):
     def __str__(self):
         return self.user.username
 
-class Artwork(models.Model):
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-    artist = models.ForeignKey(
-        'app.Artist',  # Reference the Artist model
-        on_delete=models.CASCADE,
-        related_name='app_artworks'  # Unique related_name
-    )
-    image = models.ImageField(upload_to='artworks/')
-    created_at = models.DateTimeField(auto_now_add=True)
+class CustomUser(AbstractUser):
+    is_artist = models.BooleanField(default=False)  # Add this field
+    is_customer = models.BooleanField(default=False)  # Optional if needed
 
     def __str__(self):
-        return self.title
+        return self.username

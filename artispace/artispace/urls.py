@@ -6,9 +6,8 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('app/', include('app.urls')),  # Main app
-    path("accounts/", include("accounts.urls", namespace="accounts")), # Accounts app
-    # path('gallery/', include(('gallery.urls', 'gallery'))),  # Gallery app (commented for now)
+    path('app/', include('app.urls')),
+    path("accounts/", include("accounts.urls")),
     path('', RedirectView.as_view(url='/app/', permanent=False)),
 ]
 

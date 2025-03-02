@@ -209,33 +209,11 @@
         <div class="left-side">
             <!-- Add your image here -->
         </div>
-
+        
          <!-- Right Side for Form -->
          <div class="right-side">
-            <!-- Sign Up Form (Customer) -->
-            <div id="signup-form">
-                <h2>Sign Up as Customer</h2>
-                <form action="{% url 'accounts:customer_signup' %}" method="post">
-                    {% csrf_token %}
-                    <input type="text" name="username" placeholder="Username" required><br>
-                    <input type="email" name="email" placeholder="Email" required><br>
-                    <input type="password" name="password" placeholder="Password" required><br>
-                    <button type="submit">Sign Up</button>
-                    <div id="messages">
-                        {% if messages %}
-                            {% for message in messages %}
-                                <p style="color: green;">{{ message }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                </form>
-                <p><a href="{% url 'app:artist_signup' %}" class="switch-link">Sign Up as Artist</a></p>
-                <p><a href="#" id="switch-to-login" class="switch-link">Already have an account? Login</a></p>
-            </div>
-        </div>
-
-        <!-- Sign Up Form (Artist) -->
-            <div id="artist-signup-form" style="display: none;">
+            <!-- Sign Up Form (Artist) -->
+            <div id="artist-signup-form" >
                 <h2>Sign Up as Artist</h2>
                 <form action="{% url 'accounts:artist_signup' %}" method="post">
                     {% csrf_token %}
@@ -253,33 +231,8 @@
                 </form>
                 <p><a href="{% url 'app:artist_signup' %}">Sign Up as Artist</a></p>
             </div>
-
-        <!-- Login Form (Artist) -->
-        <div id="artist-login-form" style="display: none;">
-            <h2>Login as Artist</h2>
-            <form action="{% url 'accounts:artist_login' %}" method="post">
-                {% csrf_token %}
-                <input type="text" name="username" placeholder="Username" required><br>
-                <input type="password" name="password" placeholder="Password" required><br>
-                <button type="submit">Login</button>
-            </form>
-            <p><a href="customer_login.html" id="switch-to-customer-login" class="switch-link">Login as Customer</a></p>
-        </div>   
-
-    <!-- Login Modal (Popup) -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Login</h2>
-            <form action="{% url 'accounts:customer_login' %}" method="post">
-                {% csrf_token %}
-                <input type="text" name="username" placeholder="Username" required><br>
-                <input type="password" name="password" placeholder="Password" required><br>
-                <button type="submit">Login</button>
-            </form>
-            <p><a href="{% url 'accounts:artist_login' %}" class="switch-link">Login as Artist</a></p>
         </div>
-    </div>
+
 
     <!-- JavaScript -->
     <script>
