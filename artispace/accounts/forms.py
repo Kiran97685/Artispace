@@ -29,7 +29,7 @@ class CustomerSignUpForm(forms.ModelForm):
     
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.role = 'artist'  # Explicitly set the role to artist
+        user.role = 'customer'  # Explicitly set the role to artist
         if commit:
             user.save()
         return user

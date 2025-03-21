@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Login</title>
+    <title>Artist Login</title>
     <style>
         /* Modal styles */
         .modal {
@@ -51,24 +51,35 @@
     </style>
 </head>
 <body>
-    <h1>Customer Login</h1>
+    <h1>Artist Home</h1>
     <button id="loginButton">Login</button> <!-- Button to trigger the popup -->
 
     <!-- Modal Popup -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span> <!-- Close button -->
-            <h2>Customer Login</h2>
-            <form method="post" action="{% url 'accounts:customer_login' %}">
+            <h2>Artist Login</h2>
+            <form id="customerLoginForm">
                 {% csrf_token %}
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required><br><br>
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required><br><br>
-                <button type="submit">Logn</button>
+                <!-- Only show login-related messages inside the modal -->
+            {% if messages %}
+            <div style="color: red;">
+                {% for message in messages %}
+                    {% if "login_error" in message.tags %}  
+                        <p>{{ message }}</p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+                <button type="submit">Login</button>
+                <p id="loginMessage"></p> <!-- Success/Error Message -->
             </form>
             <p>
-                Don't have an account? <a href="{% url 'accounts:customer_signup' %}">Sign up here</a>.
+                Don't have an account? <a href="{% url 'accounts:artist_signup' %}">Sign up here</a>.
             </p>
         </div>
     </div>
@@ -78,6 +89,8 @@
         const modal = document.getElementById("loginModal");
         const btn = document.getElementById("loginButton");
         const span = document.getElementsByClassName("close")[0];
+        const loginForm = document.getElementById("customerLoginForm");
+        const loginMessage = document.getElementById("loginMessage");
 
         // Open the modal when the button is clicked
         btn.onclick = function() {
@@ -95,6 +108,63 @@
                 modal.style.display = "none";
             }
         }
+
+        // Function to get CSRF token from cookies
+        function getCSRFToken() {
+            let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+            if (csrfToken) {
+                return csrfToken.value; // Get from hidden input field
+            }
+
+            // Get from cookies if not found in form
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith('csrftoken=')) {
+                    return cookie.split('=')[1];
+                }
+            }
+            return '';
+        }
+
+        // Handle form submission with AJAX
+        loginForm.addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const csrfToken = getCSRFToken();
+
+            fetch("{% url 'accounts:customer_login' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken  // Include CSRF token
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loginMessage.innerHTML = "Login successful!";
+                    loginMessage.style.color = "green";
+                    setTimeout(() => {
+                        window.location.href = "{% url 'accounts:customer_dashboard' %}"; // Redirect to customer home
+                    }, 1500);
+                } else {
+                    loginMessage.innerHTML = "Invalid username or password!";
+                    loginMessage.style.color = "red";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                loginMessage.innerHTML = "An error occurred. Try again.";
+                loginMessage.style.color = "red";
+            });
+        });
     </script>
 </body>
 </html>

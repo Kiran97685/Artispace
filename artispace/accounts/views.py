@@ -20,6 +20,10 @@ from django.db import IntegrityError
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages  # Import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+from django.urls import reverse_lazy
+from django.middleware.csrf import get_token
 
 # Get the custom user model
 CustomUser = get_user_model()
@@ -44,7 +48,7 @@ def artist_register(request):
 
             # Log the user in and redirect to artist dashboard
             login(request, user)
-            return redirect('accounts/artist_dashboard')  # Replace with actual URL
+            return redirect('accounts:artist_dashboard')  # Replace with actual URL
 
     else:
         user_form = ArtistSignUpForm()
@@ -55,6 +59,8 @@ def artist_register(request):
     })
 
 def artist_signup(request):
+    logout(request)  # Log out any currently logged-in user
+    request.session.flush()  # Clear session data
     if request.method == "POST":
         user_form = ArtistSignUpForm(request.POST)
         artist_form = ArtistForm(request.POST)
@@ -63,6 +69,7 @@ def artist_signup(request):
             # Save the user
             user = user_form.save(commit=False)
             user.role = 'artist'
+            user.set_password(user.password)
             user.save()  # Save user first
 
             # Save the artist profile
@@ -70,30 +77,43 @@ def artist_signup(request):
             artist.user = user  # Link the artist profile to the user
             artist.save()  # Save artist profile
             messages.success(request, "Signed up successfully!")  # Add success message
-            return redirect("app:artistHome")  # Redirect to the login page
+            return redirect("app:artistHome")
 
     else:
         user_form = ArtistSignUpForm()
         artist_form = ArtistForm()
 
-    return render(request, "app:artistHome", {"user_form": user_form, "artist_form": artist_form})
+    return render(request, "app/artistHome.html", {"user_form": user_form, "artist_form": artist_form})
+
 
 def artist_login(request):
+    login_error = None  # Store login error separately
+    show_modal = False  # Default: Do not show modal
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
-        
+
         if user is not None:
-            login(request, user)
-            if hasattr(user, 'artist'):  # Check if the user is an artist
-                return redirect('accounts/artist_dashboard')
+            if user.role == 'artist':  # Check if the user is an artist
+                login(request, user)
+                request.session['user_type'] = 'artist'  # Store user type in session
+                request.session.set_expiry(0)  # Persist session until logout
+                
+                return redirect(reverse_lazy('accounts:artist_dashboard'))
             else:
-                return redirect('customer_dashboard')
+                login_error = "Access Denied: You are not an artist."
         else:
-            messages.error(request, "Invalid username or password.")
-    
-    return render(request, 'accounts/artist_login.html')
+            login_error = "Invalid username or password."
+            show_modal = True  # Keep modal open if login fails
+            context = {
+            'login_error': login_error,
+            'show_modal': show_modal,  # Keep the modal open
+            'csrf_token': get_token(request)  # Ensure CSRF token is regenerated
+    }
+            return render(request, 'app/artistHome.html')
+
+    return render(request, 'accounts/artist_login.html', context)
 
 # -------------------- Customer Signup --------------------
 
@@ -104,12 +124,13 @@ def customer_signup(request):
             # Save the user
             user = form.save(commit=False)
             user.role = 'customer'
+            user.set_password(user.password)
             user.save()  # Save user first
             messages.success(request, "Signed up successfully!")  # Add success message
             return redirect("app:home")  # Redirect to the login page
     else:
         form = CustomerSignUpForm()
-    return render(request, "app:home", {"form": form})
+    return render(request, "app/home.html", {"form": form})
 
 # -------------------- Customer Login --------------------
 def customer_login(request):
@@ -117,13 +138,23 @@ def customer_login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
+       
         if user is not None:
-            login(request, user)
-            return redirect('home')  # Redirect to the home page after login
+            if user.role == 'customer':  # Check if the user is a customer
+                login(request, user)
+                request.session['user_type'] = 'customer'  # Store user type in session
+                request.session.set_expiry(0)  # Persist session until logout
+
+                return redirect('accounts:customer_dashboard')
+            else:
+                messages.error(request, "Access Denied: You are not a customer.", extra_tags="login_error")
         else:
-            messages.error(request, "Invalid username or password.")
-    
-    return render(request, 'accounts/customer_login.html')
+            messages.error(request, "Invalid username or password.", extra_tags="login_error")
+            return render(request, 'app/home.html')  # Ensure correct template path
+
+    return render(request, 'accounts/artist_login.html')
+
+
 
 # -------------------- Username Validation --------------------
 def clean_username(self):
@@ -151,18 +182,42 @@ def login_view(request):
 
     return render(request, 'accounts/login.html', {'form': form})
 
+@login_required
+def customer_dashboard(request):
+    
+    if request.session.get('user_type') == 'customer':
+        return render(request, "customer_dashboard.html")
+    
+    return redirect('customer_login')
+
+@login_required
+def artist_dashboard(request):
+    if request.session.get('user_type') == 'artist':
+        return render(request, "accounts/artist_dashboard.html")  # ✅ Correct template path
+    else:
+        return redirect('accounts:artist_login')  # ✅ Redirect to the artist login page
+
+
+def artist_logout(request):
+    if 'user_type' in request.session:
+        del request.session['user_type']  # Remove user type
+    request.session.flush()  # Completely clear the session
+    logout(request)  # Logout user
+    return redirect('app:artistHome')  # Redirect to artist login
+
+def customer_logout(request):
+    if 'user_type' in request.session:
+        del request.session['user_type']  # Delete user type from session
+    request.session.flush()  # Completely clear the session
+    logout(request)  # Logout the user
+    return redirect('app:home')  # Redirect to login page
+ 
 # -------------------- Home Page --------------------
 def home(request):
     return render(request, 'app/home.html')
 
 def artistHome(request):
-    return render(request, 'app/artistHome.html')
+    return render(request, 'artistHome.html')
 
 def customer_dashboard(request):
-    return render(request, 'accounts/customer_dashboard.html')
-
-def artist_dashboard(request):
-    return render(request, 'accounts/artist_dashboard.html')
-
-def success_view(request):
-    return render(request, 'accounts/success.html')
+    return render(request, "accounts/customer_dashboard.html")

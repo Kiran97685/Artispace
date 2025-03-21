@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            height: 100vh; /* Full height */
+            height: 100vh;
             margin: 0;
             display: flex;
             justify-content: center;
@@ -33,7 +33,7 @@
 
         .left-side {
             width: 50%;
-            background-image: url('your-image-url.jpg'); /* Add your image URL here */
+            background-image: url('your-image-url.jpg'); 
             background-size: cover;
             background-position: center;
             height: 100%;
@@ -59,7 +59,7 @@
             font-size: 1.5rem;
         }
 
-        input[type="text"], input[type="email"], input[type="password"] {
+        input, button {
             width: 100%;
             padding: 12px;
             margin: 10px 0;
@@ -69,35 +69,15 @@
         }
 
         button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
             background-color: #4CAF50;
-            border: none;
-            border-radius: 8px;
             color: white;
             font-size: 1.2rem;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: 0.3s;
         }
 
         button:hover {
             background-color: #45a049;
-        }
-
-        p {
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .switch-link {
-            color: #4CAF50;
-            text-decoration: none;
-            font-size: 1rem;
-        }
-
-        .switch-link:hover {
-            text-decoration: underline;
         }
 
         .navbar {
@@ -106,24 +86,34 @@
             padding: 20px;
             text-align: center;
             position: absolute;
-            top: 20px;
+            top: 0;
             width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .navbar a {
+        .navbar a, .logout-btn {
             color: white;
             text-decoration: none;
             font-size: 1.2rem;
             padding: 10px 20px;
-            margin: 0 10px;
             border-radius: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
         }
 
-        .navbar a:hover {
+        .navbar a:hover, .logout-btn:hover {
             background-color: #575757;
         }
 
-        /* Mobile Responsiveness */
+        .message {
+            text-align: center;
+            color: green;
+            margin-top: 10px;
+        }
+
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
@@ -132,10 +122,6 @@
             .left-side, .right-side {
                 width: 100%;
                 height: 50%;
-            }
-
-            .right-side {
-                justify-content: flex-start;
             }
         }
 
@@ -192,7 +178,6 @@
         .modal-content button:hover {
             background-color: #45a049;
         }
-
     </style>
 </head>
 <body>
@@ -200,69 +185,77 @@
     <!-- Navbar -->
     <div class="navbar">
         <a href="#">ArtiSpace</a>
-        <a href="customer_login.html" id="login-btn">Login</a>
+        {% if request.user.is_authenticated %}
+            <span>Welcome, {{ request.user.username }}</span>
+            <form method="POST" action="{% url 'accounts:artist_logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
+        {% else %}
+            <button id="login-btn">Login</button>
+        {% endif %}
     </div>
 
-     <!-- Main Content Container -->
-     <div class="container">
-        <!-- Left Side for Image -->
-        <div class="left-side">
-            <!-- Add your image here -->
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Artist Login</h2>
+            <form method="POST" action="{% url 'accounts:artist_login' %}">
+                {% csrf_token %}
+                <input type="text" name="username" placeholder="Username" required><br>
+                <input type="password" name="password" placeholder="Password" required><br>
+                <button type="submit">Login</button>
+            </form>
         </div>
-        
-         <!-- Right Side for Form -->
-         <div class="right-side">
-            <!-- Sign Up Form (Artist) -->
-            <div id="artist-signup-form" >
-                <h2>Sign Up as Artist</h2>
-                <form action="{% url 'accounts:artist_signup' %}" method="post">
-                    {% csrf_token %}
-                    <input type="text" name="username" placeholder="Username" required><br>
-                    <input type="email" name="email" placeholder="Email" required><br>
-                    <input type="password" name="password" placeholder="Password" required><br>
-                    <button type="submit">Sign Up</button>
-                    <div id="messages">
-                        {% if messages %}
-                            {% for message in messages %}
-                                <p style="color: green;">{{ message }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                </form>
-                <p><a href="{% url 'app:artist_signup' %}">Sign Up as Artist</a></p>
-            </div>
-        </div>
+    </div>
 
+    <div class="container">
+        <div class="left-side"></div>
+        
+        <div class="right-side">
+            <h2>Sign Up as Artist</h2>
+            <form action="{% url 'accounts:artist_signup' %}" method="post">
+                {% csrf_token %}
+                <input type="text" name="username" placeholder="Username" required><br>
+                <input type="email" name="email" placeholder="Email" required><br>
+                <input type="password" name="password" placeholder="Password" required><br>
+                <button type="submit">Sign Up</button>
+            </form>
+
+            <div class="message">
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <p><a href="{% url 'app:home' %}">Sign Up as Customer</a></p>
+        </div>
+    </div>
 
     <!-- JavaScript -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Select elements
             const loginBtn = document.getElementById("login-btn");
             const loginModal = document.getElementById("loginModal");
             const closeBtn = document.querySelector(".close");
 
-            // Check if elements exist before adding event listeners
             if (loginBtn && loginModal && closeBtn) {
-                // Show Login Popup when Login button is clicked
-                loginBtn.addEventListener("click", function (event) {
-                    event.preventDefault();
+                loginBtn.addEventListener("click", function () {
                     loginModal.style.display = "flex";
                 });
 
-                // Close the modal when clicking the close button
                 closeBtn.addEventListener("click", function () {
                     loginModal.style.display = "none";
                 });
 
-                // Close the modal when clicking outside the modal content
                 window.addEventListener("click", function (event) {
                     if (event.target === loginModal) {
                         loginModal.style.display = "none";
                     }
                 });
-            } else {
-                console.error("One or more required elements not found in the DOM.");
             }
         });
     </script>

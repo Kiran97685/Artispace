@@ -33,7 +33,7 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="">Profile</a></li>
-                        <li><a class="dropdown-item text-danger" href="">Logout</a></li>
+                        <li><a class="dropdown-item text-danger" href="{% url 'accounts:artist_logout' %}">Logout</a></li>
                     </ul>
                 </li>
             </ul>
@@ -99,7 +99,7 @@
                 <div class="card-body text-center">
                     <h5 class="card-title">Logout</h5>
                     <p class="card-text">Logout from your artist account.</p>
-                    <a href="" class="btn btn-danger">Logout</a>
+                    <a href="accounts:artist_logout" class="btn btn-danger">Logout</a>
                 </div>
             </div>
         </div>

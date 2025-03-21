@@ -141,14 +141,14 @@
 
         /* Login Modal Styles */
         .modal {
-            display: none;
+            display: none; /* Start hidden */
             position: fixed;
-            z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.4);
+            display: flex; /* Ensure flex when active */
             justify-content: center;
             align-items: center;
         }
@@ -200,7 +200,7 @@
     <!-- Navbar -->
     <div class="navbar">
         <a href="#">ArtiSpace</a>
-        <a href="customer_login.html" id="login-btn">Login</a>
+        <a href="#" id="login-btn">Login</a>
     </div>
 
      <!-- Main Content Container -->
@@ -229,7 +229,7 @@
                         {% endif %}
                     </div>
                 </form>
-                <p><a href="{% url 'app:artist_signup' %}" class="switch-link">Sign Up as Artist</a></p>
+                <a href="{% url 'app:artistHome' %}">Sign Up as Artist</a>
                 <p><a href="#" id="switch-to-login" class="switch-link">Already have an account? Login</a></p>
             </div>
         </div>
@@ -294,6 +294,7 @@
                 // Show Login Popup when Login button is clicked
                 loginBtn.addEventListener("click", function (event) {
                     event.preventDefault();
+                    console.log("Login button clicked, opening modal.");
                     loginModal.style.display = "flex";
                 });
 

@@ -6,6 +6,10 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from .models import CustomUser
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from .forms import UserSignupForm, ArtistSignupForm
+
 
 def home(request):
     return render(request, 'app/home.html')
@@ -21,12 +25,6 @@ def artist_dashboard(request):
 
 def login_view(request):
     return render(request, 'accounts/registration/login.html')
-
-# accounts/views.py
-from django.shortcuts import render, redirect
-from django.contrib.auth import login
-from .forms import UserSignupForm, ArtistSignupForm
-
 
 def customer_signup(request):
     if request.method == 'POST':
@@ -67,3 +65,6 @@ class SignUpView(CreateView):
 def artist_dashboard(request):
     print("Rendering artist_dashboard.html")  # Debugging
     return render(request, 'accounts/artist_dashboard.html')
+
+def artist_signup(request):
+    return render(request, 'accounts/artist_signup.html')

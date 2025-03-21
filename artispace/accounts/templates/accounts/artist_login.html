@@ -52,6 +52,10 @@
         <div class="modal-content">
             <span class="close">&times;</span> <!-- Close button -->
             <h2>Artist Login</h2>
+            <!-- Show login error inside modal -->
+            {% if login_error %}
+            <p style="color: red;">{{ login_error }}</p>
+            {% endif %}
             <form method="post" action="{% url 'accounts:artist_login' %}">
                 {% csrf_token %}
                 <label for="username">Username:</label>
@@ -88,6 +92,11 @@
                 modal.style.display = "none";
             }
         }
+
+         // Keep modal open if login fails (Django passes 'show_modal' as true)
+        {% if show_modal %}
+         modal.style.display = "block";
+        {% endif %}
     </script>
 </body>
 </html>

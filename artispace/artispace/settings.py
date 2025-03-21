@@ -63,6 +63,13 @@ TEMPLATES = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Default backend
+]
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # False means session persists until manually logged out
+SESSION_COOKIE_AGE = 86400  # 1 day in seconds
+
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -102,3 +109,7 @@ ROOT_URLCONF = 'artispace.urls'  # Replace 'artispace' with your project name if
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'customer_dashboard'
+LOGIN_REDIRECT_URL = '/artist/dashboard/'
+LOGIN_URL = '/customer/login/'  # Set to your customer login URL
+LOGIN_REDIRECT_URL = '/customer/dashboard/'  # Redirect to customer dashboard after login
