@@ -1,196 +1,202 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <title>Welcome to ArtiSpace</title>
     <style>
+        /* Reset styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        /* Full-page background image */
         body {
-            font-family: 'Arial', sans-serif;
-            height: 100vh; /* Full height */
-            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #f4f4f4;
-        }
-
-        .container {
-            display: flex;
-            width: 100%;
-            max-width: 1200px;
-            height: 100%;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .left-side {
-            width: 50%;
-            background-image: url('your-image-url.jpg'); /* Add your image URL here */
+            background: url('{% static "app/images/homepage.jpg" %}') no-repeat center center fixed;
             background-size: cover;
-            background-position: center;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position: relative;
         }
-
-        .right-side {
-            width: 50%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 40px;
-            align-items: center;
-            overflow-y: auto;
-        }
-
-        .right-side h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-        }
-
-        input[type="text"], input[type="email"], input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            font-size: 1rem;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            background-color: #4CAF50;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        p {
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .switch-link {
-            color: #4CAF50;
-            text-decoration: none;
-            font-size: 1rem;
-        }
-
-        .switch-link:hover {
-            text-decoration: underline;
-        }
-
-        .navbar {
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            text-align: center;
+        
+        /* Light overlay to fade the background image */
+        body::before {
+            content: "";
             position: absolute;
-            top: 20px;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.5); /* Lighten the image */
+            z-index: -1;
+        }
+
+        /* Navbar styling */
+        .navbar {
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
         }
 
         .navbar a {
             color: white;
             text-decoration: none;
-            font-size: 1.2rem;
-            padding: 10px 20px;
-            margin: 0 10px;
-            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        /* Centered form container */
+        #signup-form {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(211, 93, 93, 0.7); /* Dark form */
+            color: white;
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            width: 150%;
+            max-width: 400px;
+            text-align: center;
         }
 
-        .navbar a:hover {
-            background-color: #575757;
+        /* Form input fields */
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            outline: none;
         }
 
-        /* Mobile Responsiveness */
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-
-            .left-side, .right-side {
-                width: 100%;
-                height: 50%;
-            }
-
-            .right-side {
-                justify-content: flex-start;
-            }
+        /* Placeholder styling */
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
         }
 
-        /* Login Modal Styles */
+        /* Button styling */
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            background: #ff7e5f;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+        button:hover {
+            background: #ff758c;
+        }
+
+        /* Sign-up links */
+        p a {
+            color: rgb(248, 246, 242);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        p a:hover {
+            color: #ff7e5f;
+        }
+
+        /* Login Modal Popup */
         .modal {
-            display: none; /* Start hidden */
+            display: none;
             position: fixed;
+            z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.4);
-            display: flex; /* Ensure flex when active */
+            background: rgba(0, 0, 0, 0.6); /* Dark overlay */
+            display: flex;
             justify-content: center;
             align-items: center;
         }
 
+        /* Modal content */
         .modal-content {
-            background-color: white;
-            padding: 20px;
+            background: rgba(91, 88, 88, 0.9); /* Darker background for contrast */
+            padding: 30px;
             border-radius: 10px;
-            width: 300px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.3);
+            color: white;
+            border: 2px solid white; /* White border for visibility */
             text-align: center;
-            position: relative;
         }
 
+        /* Close button */
         .close {
             position: absolute;
             top: 10px;
-            right: 15px;
-            font-size: 20px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
             cursor: pointer;
         }
 
+        /* Input fields */
         .modal-content input {
-            width: 90%;
-            padding: 10px;
+            width: 100%;
+            padding: 12px;
             margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            outline: none;
         }
 
+        /* Placeholder styling */
+        .modal-content input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Button styling */
         .modal-content button {
             width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
+            padding: 12px;
+            margin-top: 10px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
+            background: #ff7e5f;
             color: white;
-            font-size: 1rem;
+            font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
+            transition: 0.3s ease;
         }
 
         .modal-content button:hover {
-            background-color: #45a049;
+            background: #ff758c;
         }
 
     </style>
@@ -207,12 +213,6 @@
      <div class="container">
         <!-- Left Side for Image -->
         <div class="left-side">
-            <!-- Add your image here -->
-        </div>
-
-         <!-- Right Side for Form -->
-         <div class="right-side">
-            <!-- Sign Up Form (Customer) -->
             <div id="signup-form">
                 <h2>Sign Up as Customer</h2>
                 <form action="{% url 'accounts:customer_signup' %}" method="post">
@@ -234,6 +234,12 @@
             </div>
         </div>
 
+         <!-- Right Side for Form -->
+         <div class="right-side">
+            <!-- Sign Up Form (Customer) -->
+           
+        
+
         <!-- Sign Up Form (Artist) -->
             <div id="artist-signup-form" style="display: none;">
                 <h2>Sign Up as Artist</h2>
@@ -253,6 +259,7 @@
                 </form>
                 <p><a href="{% url 'app:artist_signup' %}">Sign Up as Artist</a></p>
             </div>
+        </div>
 
         <!-- Login Form (Artist) -->
         <div id="artist-login-form" style="display: none;">

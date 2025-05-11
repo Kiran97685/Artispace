@@ -21,8 +21,10 @@ INSTALLED_APPS = [
     'django_extensions',
     'accounts',  # Make sure the 'accounts' app is present
     'app',       # Your custom app
+    'corsheaders',
     'gallery',   # Gallery-related app
-    'storages',  # For AWS S3 integration
+    'storages',
+    'artworks', # For AWS S3 integration
 ]
 
 # Middleware
@@ -33,10 +35,12 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Database
 DATABASES = {
@@ -73,7 +77,7 @@ SESSION_COOKIE_AGE = 86400  # 1 day in seconds
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [BASE_DIR / 'app/static']
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Media settings
 if DEBUG:
@@ -86,8 +90,8 @@ else:
 # AWS S3 settings
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default='NOT_FOUND')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default='NOT_FOUND')
-AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default='NOT_FOUND')
-AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='us-east-1')
+AWS_STORAGE_BUCKET_NAME = 'artist-artwork-uploads'
+AWS_S3_REGION_NAME = config('us-east-1', default='us-east-1')
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None

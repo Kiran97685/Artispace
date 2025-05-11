@@ -9,6 +9,7 @@ urlpatterns = [
     path('app/', include('app.urls')),
     path("accounts/", include("accounts.urls")),
     path('', RedirectView.as_view(url='/app/', permanent=False)),
+    path('artworks/', include('artworks.urls')),
 ]
 
 # Serve media files during development
