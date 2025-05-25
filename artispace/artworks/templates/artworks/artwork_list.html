@@ -25,9 +25,9 @@
     {% if artworks %}
         {% for artwork in artworks %}
             <div class="artwork">
-                <img src="{{ artwork.image }}" alt="{{ artwork.title }}">
                 <h3>{{ artwork.title }}</h3>
                 <p>Price: ${{ artwork.price }}</p>
+                <img src="{{ artwork.image }}" alt="{{ artwork.title }}" width="300">
             </div>
         {% endfor %}
     {% else %}

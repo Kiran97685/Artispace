@@ -11,11 +11,8 @@ def upload_artwork(request):
         title = request.POST.get('title')
         price = request.POST.get('price')
         image_file = request.FILES.get('image')
-        print("Received POST:", title, price, image_file)
 
         artist_id = request.session.get('artist_id')
-        print("Artist ID from session:", artist_id)
-
         if not artist_id:
             return render(request, 'artworks/upload_artwork.html', {'error': 'You must be logged in as an artist.'})
 
@@ -37,7 +34,6 @@ def upload_artwork(request):
 
             file_extension = image_file.name.split('.')[-1]
             s3_key = f'artworks/{uuid.uuid4()}.{file_extension}'
-            print("Uploading to S3 as:", s3_key)
 
             s3.upload_fileobj(
                 image_file,
@@ -46,23 +42,17 @@ def upload_artwork(request):
             )
 
             image_url = f"https://{settings.AWS_S3_CUSTOM_DOMAIN}/{s3_key}"
-            print("Image URL:", image_url)
 
-            # Save to DB
-            artwork = Artwork.objects.create(
+            Artwork.objects.create(
                 title=title,
                 price=float(price) if price else 0.0,
                 image=image_url,
                 artist=artist
             )
-            print("Artwork saved:", artwork)
 
-            return render(request, 'artworks/upload_artwork.html', {
-                'success': 'Artwork uploaded successfully.'
-            })
+            return redirect('artwork_list')  # <-- This will redirect to view artworks page
 
         except Exception as e:
-            print("Upload failed:", str(e))
             return render(request, 'artworks/upload_artwork.html', {
                 'error': f'Upload failed: {str(e)}'
             })
@@ -71,16 +61,16 @@ def upload_artwork(request):
 
 # View to display artworks uploaded by the logged-in artist
 def artwork_list(request):
-    # Get the artist from the session
     artist_id = request.session.get('artist_id')
     if not artist_id:
         return render(request, 'artworks/artwork_list.html', {'error': 'You must be logged in as an artist.'})
+        print("Artist ID from session:", artist_id)
 
     try:
         artist = Artist.objects.get(id=artist_id)
     except Artist.DoesNotExist:
         return render(request, 'artworks/artwork_list.html', {'error': 'Invalid artist session.'})
 
-    # Filter artworks by the logged-in artist
     artworks = Artwork.objects.filter(artist=artist)
+    print("Found artworks:", artworks)
     return render(request, 'artworks/artwork_list.html', {'artworks': artworks})

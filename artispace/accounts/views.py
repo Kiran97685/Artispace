@@ -86,34 +86,44 @@ def artist_signup(request):
     return render(request, "app/artistHome.html", {"user_form": user_form, "artist_form": artist_form})
 
 
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.urls import reverse_lazy
+from django.middleware.csrf import get_token
+
 def artist_login(request):
-    login_error = None  # Store login error separately
-    show_modal = False  # Default: Do not show modal
+    login_error = None
+    show_modal = False
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            if user.role == 'artist':  # Check if the user is an artist
+            if user.role == 'artist':
                 login(request, user)
-                request.session['user_type'] = 'artist'  # Store user type in session
-                request.session.set_expiry(0)  # Persist session until logout
-                
+                request.session['user_type'] = 'artist'
+                request.session['artist_id'] = user.id  # ✅ Required for uploading artworks
+                request.session.set_expiry(0)
+
                 return redirect(reverse_lazy('accounts:artist_dashboard'))
             else:
                 login_error = "Access Denied: You are not an artist."
         else:
             login_error = "Invalid username or password."
-            show_modal = True  # Keep modal open if login fails
-            context = {
-            'login_error': login_error,
-            'show_modal': show_modal,  # Keep the modal open
-            'csrf_token': get_token(request)  # Ensure CSRF token is regenerated
-    }
-            return render(request, 'app/artistHome.html')
+            show_modal = True
 
-    return render(request, 'accounts/artist_login.html', context)
+        # ✅ Now context is defined regardless of condition
+        context = {
+            'login_error': login_error,
+            'show_modal': show_modal,
+            'csrf_token': get_token(request)
+        }
+        return render(request, 'app/artistHome.html', context)
+
+    # ✅ For GET request, just render the form normally
+    return render(request, 'accounts/artist_login.html')
 
 # -------------------- Customer Signup --------------------
 
