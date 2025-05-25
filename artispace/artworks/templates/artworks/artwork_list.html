@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Artwork List</title>
+    <style>
+        .artwork {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin: 10px;
+            display: inline-block;
+            width: 250px;
+            vertical-align: top;
+            text-align: center;
+        }
+        .artwork img {
+            width: 100%;
+            height: auto;
+            max-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h1>All Artworks</h1>
+
+    {% if artworks %}
+        {% for artwork in artworks %}
+            <div class="artwork">
+                <img src="{{ artwork.image }}" alt="{{ artwork.title }}">
+                <h3>{{ artwork.title }}</h3>
+                <p>Price: ${{ artwork.price }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No artworks available.</p>
+    {% endif %}
+</body>
+</html>
